@@ -11,7 +11,7 @@ public class BattleTest {
 
     private Player player;
     private Guard guard;
-    private BasicEnemyFactory factory = new BasicEnemyFactory();
+    private final BasicEnemyFactory factory = new BasicEnemyFactory();
 
 
     @BeforeEach
