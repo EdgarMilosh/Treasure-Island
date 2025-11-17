@@ -1,66 +1,70 @@
 package org.example.events;
 
-import java.util.Random;
-import java.util.Scanner;
 import org.example.game.GameContext;
+import org.example.game.factories.BasicEnemyFactory;
+import org.example.game.factories.EnemyFactory;
+import org.example.game.strategies.BattleStrategy;
+import org.example.game.strategies.EnemyAttackStrategy;
+import org.example.game.strategies.PlayerAttackStrategy;
+import org.example.game.strategies.RunAwayStrategy;
+import org.example.model.Creature;
 import org.example.model.Guard;
 import org.example.model.Player;
+import org.example.ui.Ui;
 
 public class GuardEvent implements SectorEvent {
+
+  private final EnemyFactory enemyFactory = new BasicEnemyFactory();
 
   @Override
   public void execute(GameContext context) {
     Player player = context.getPlayer();
+    Ui ui = context.getUi();
+    Guard guard = enemyFactory.createGuard();
 
-    final int BASIC_GUARD_MAX_HP = 50;
-    final int BASIC_GUARD_DAMAGE = 10;
-    Guard guard = new Guard("Island Guard", BASIC_GUARD_MAX_HP, BASIC_GUARD_DAMAGE);
-    System.out.println("======================================");
-    System.out.println("An " + guard.getName() + "blocks your path!");
+    ui.showMessage("======================================");
+    ui.showMessage(guard.getName() + " blocks your path!");
 
-    Scanner scanner = context.getScanner();
+    startBattle(player, guard, ui);
+  }
+
+  private void startBattle(Player player, Guard guard, Ui ui) {
+    BattleStrategy playerAttack = new PlayerAttackStrategy();
+    BattleStrategy enemyAttack = new EnemyAttackStrategy();
+    RunAwayStrategy runAway = new RunAwayStrategy();
+
     while (!guard.isDead() && !player.isDead()) {
-      System.out.println("================================================");
-      System.out.println(player.getName() + " " + player.getCurrentHealth() + "/" + player.getMaxHealth());
-      System.out.println(
-          guard.getName() + " HP: " + guard.getCurrentHealth() + "/" + guard.getMaxHealth());
+      ui.showBattleStatus(player, guard);
 
-      System.out.print("Choose action (a - attack/ r - run): ");
-      String action = scanner.nextLine().toLowerCase();
+      ui.showMessage("Choose action (a - attack / r - run): ");
+      String action = ui.getInput().trim().toLowerCase();
 
       switch (action) {
-        case "attack" , "a" -> {
-          guard.takeDamage(player.getAttackPower());
-          System.out.println("You attacked the guard for " + player.getAttackPower() + " damage!");
-        }
-        case "run" , "r" -> {
-          Random rand = new Random();
-          if (rand.nextBoolean()) {
-            System.out.println("============================");
-            System.out.println("You successfully ran away!");
+        case "a", "attack" -> playerAttack.execute(player, guard, ui);
+        case "r", "run" -> {
+          runAway.execute(player, guard, ui);
+          if (runAway.isSuccess()) {
             return;
-          } else {
-            System.out.println("You failed to run away!");
           }
-
-        } default -> System.out.println("Not a valid action!\n You skipped your turn");
+        }
+        default -> ui.showMessage("Not a valid action! You skipped your turn");
       }
 
       if (!guard.isDead()) {
-        player.takeDamage(guard.getAttackPower());
-        System.out.println("The guard attacks you for " + guard.getAttackPower() + " damage!");
+        enemyAttack.execute(player, guard, ui);
       }
     }
 
-    if (guard.isDead()) {
-      System.out.println("============================");
-      System.out.println("You defeated the guard!");
-      System.out.println("============================");
+    showBattleOutcome(guard, ui);
+  }
+
+  private void showBattleOutcome(Creature enemy, Ui ui) {
+    ui.showMessage("============================");
+    if (enemy.isDead()) {
+      ui.showMessage("You defeated the " + enemy.getName() + "!");
     } else {
-      System.out.println("============================");
-      System.out.println("You have been defeated...");
-      System.out.println("============================");
+      ui.showMessage("You have been defeated...");
     }
+    ui.showMessage("============================");
   }
 }
-

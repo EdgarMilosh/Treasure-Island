@@ -1,12 +1,18 @@
 package org.example.ui;
 
+import static org.example.actions.PlayerActions.move;
+import static org.example.actions.PlayerActions.useSupplyToHeal;
+
 import java.util.Scanner;
 import org.example.game.GameContext;
+import org.example.model.Creature;
 import org.example.model.Player;
 import org.example.world.Island;
+import org.example.world.Sector;
 
-public class ConsoleUi {
+public class ConsoleUi implements Ui {
 
+  private static final int HEAL_AMOUNT_FOR_SUPPLY = 50;
   private final Scanner scanner;
   private final Player player;
   private final Island island;
@@ -16,53 +22,110 @@ public class ConsoleUi {
     this.player = context.getPlayer();
     this.island = context.getIsland();
     this.gameContext = context;
-    this.scanner = context.getScanner();
+    this.scanner = new Scanner(System.in);
   }
-
 
   public void printInterface() {
-    System.out.println("================================================================");
-    System.out.println("HP:" + player.getCurrentHealth() + "/" + player.getMaxHealth());
-    System.out.println("Supplies: " + player.getSupplies());
-    System.out.println("Island map: ");
-    printMap();
-
-    System.out.println("Actions: ");
-    System.out.println("M - move to the next sector\nH - use supplies to heal (50 hp)");
+    showMessage("================================================================");
+    showPlayerStatus(player);
+    showMap();
+    showActions();
     scanMove();
-
   }
 
-  public void printMap() {
+  @Override
+  public void showPlayerStatus(Player player) {
+    showMessage("HP: " + player.getCurrentHealth() + "/" + player.getMaxHealth());
+    showMessage("Supplies: " + player.getSupplies());
+  }
+
+  @Override
+  public void showMap() {
+    showMessage("Island map: ");
     for (int x = 0; x < island.getWidth(); x++) {
+      StringBuilder line = new StringBuilder();
       for (int y = 0; y < island.getHeight(); y++) {
-        if (island.getPlayer().getCurrentSector().equals(island.getSectors()[x][y])) {
-          System.out.print("P ");
+        Sector sector = island.getSectors()[x][y];
+        if (player.getCurrentSector().equals(sector)) {
+          line.append("P ");
         } else {
-          island.getSectors()[x][y].printOnMap();
+          line.append(getSectorSymbol(sector));
         }
       }
-      System.out.println();
+      showMessage(line.toString());
     }
   }
 
-  public void scanMove() {
-    String move = scanner.nextLine();
-    switch (move.toUpperCase()) {
-      case "M":
-        System.out.println("Select a direction to move!\nN - north\nE - east\nW - west\nS - south");
-        String direction = scanner.nextLine();
-        player.move(direction, gameContext);
-        break;
-      case "H":
-        if (player.useSupplyToHeal()) {
-          System.out.println("You used 1 supply to heal for 50 HP!");
-        } else {
-          System.out.println("Can't heal - no supplies left");
-        }
-        break;
-      default:
-        System.out.println("Invalid action! Try again!");
+
+  private String getSectorSymbol(Sector sector) {
+    if (sector.isVisited()) {
+      return "V ";
     }
+    switch (sector.getEvent().getClass().getSimpleName()) {
+      case "TrapEvent" -> {
+        return "T ";
+      }
+      case "TreasureEvent" -> {
+        return "W ";
+      }
+      case "GuardEvent" -> {
+        return "G ";
+      }
+      case "ObstacleEvent" -> {
+        return "X ";
+      }
+      case "RandomOrNothingEvent" -> {
+        return ". ";
+      }
+      default -> {
+        return "? ";
+      }
+    }
+  }
+
+  @Override
+  public void showActions() {
+    showMessage("Actions: M - move to the next sector\n"
+        + "H - use supplies to heal (" + HEAL_AMOUNT_FOR_SUPPLY + " HP)");
+  }
+
+  @Override
+  public void scanMove() {
+    String move = getInput();
+    switch (move.toUpperCase()) {
+      case "M" -> handleMove();
+      case "H" -> handleHeal();
+      default -> showMessage("Invalid action! Try again!");
+    }
+  }
+
+  private void handleMove() {
+    showMessage("Select a direction to move:\nN - north\nE - east\nW - west\nS - south");
+    String direction = getInput().trim();
+    move(player, direction, gameContext);
+  }
+
+  private void handleHeal() {
+    if (useSupplyToHeal(player)) {
+      showMessage("You used 1 supply to heal for " + HEAL_AMOUNT_FOR_SUPPLY + " HP!");
+    } else {
+      showMessage("Can't heal - no supplies left");
+    }
+  }
+
+  @Override
+  public String getInput() {
+    return scanner.nextLine().toLowerCase();
+  }
+
+  @Override
+  public void showMessage(String message) {
+    System.out.println(message);
+  }
+
+  @Override
+  public void showBattleStatus(Player player, Creature enemy) {
+    showMessage(player.getName() + " " + player.getCurrentHealth() + "/" + player.getMaxHealth());
+    showMessage(enemy.getName() + " HP: " + enemy.getCurrentHealth() + "/" + enemy.getMaxHealth());
   }
 }

@@ -2,12 +2,8 @@ package org.example.world;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.events.GuardEvent;
-import org.example.events.RandomOrNothingEvent;
 import org.example.events.ObstacleEvent;
 import org.example.events.SectorEvent;
-import org.example.events.TrapEvent;
-import org.example.events.TreasureEvent;
 import org.example.game.GameContext;
 
 @Getter
@@ -34,23 +30,6 @@ public class Sector {
     }
   }
 
-  public void printOnMap() {
-    if (visited) {
-      System.out.print("V ");
-    } else if (event instanceof TrapEvent) {
-      System.out.print("T ");
-    } else if (event instanceof TreasureEvent) {
-      System.out.print("W ");
-    } else if (event instanceof GuardEvent) {
-      System.out.print("G ");
-    } else if (event instanceof ObstacleEvent) {
-      System.out.print("X ");
-    } else if (event instanceof RandomOrNothingEvent) {
-      System.out.print(". ");
-    } else {
-      System.out.print("? ");
-    }
-  }
 }
 
 

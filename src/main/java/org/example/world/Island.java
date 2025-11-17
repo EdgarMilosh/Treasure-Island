@@ -2,11 +2,8 @@ package org.example.world;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.events.GuardEvent;
-import org.example.events.RandomOrNothingEvent;
-import org.example.events.ObstacleEvent;
-import org.example.events.TrapEvent;
-import org.example.events.TreasureEvent;
+import org.example.events.EventType;
+import org.example.game.factories.EventFactory;
 import org.example.model.Player;
 
 @Getter
@@ -32,22 +29,25 @@ public class Island {
 
     this.sectors = new Sector[width][height];
 
-    sectors[1][3] = new Sector(1, 3, new TreasureEvent());
-    sectors[0][3] = new Sector(0, 3, new ObstacleEvent());
-    sectors[0][4] = new Sector(0, 4, new ObstacleEvent());
-    sectors[1][1] = new Sector(1, 1, new ObstacleEvent());
-    sectors[2][1] = new Sector(2, 1, new ObstacleEvent());
-    sectors[2][2] = new Sector(2, 2, new ObstacleEvent());
-    sectors[3][3] = new Sector(3, 3, new ObstacleEvent());
-    sectors[4][1] = new Sector(4, 1, new ObstacleEvent());
+    EventFactory factory = new EventFactory();
 
-    sectors[2][0] = new Sector(2, 0, new TrapEvent());
-    sectors[3][2] = new Sector(3, 2, new GuardEvent());
+    sectors[1][3] = new Sector(1, 3, factory.create(EventType.TREASURE));
+
+    sectors[0][3] = new Sector(0, 3, factory.create(EventType.OBSTACLE));
+    sectors[0][4] = new Sector(0, 4, factory.create(EventType.OBSTACLE));
+    sectors[1][1] = new Sector(1, 1, factory.create(EventType.OBSTACLE));
+    sectors[2][1] = new Sector(2, 1, factory.create(EventType.OBSTACLE));
+    sectors[2][2] = new Sector(2, 2, factory.create(EventType.OBSTACLE));
+    sectors[3][3] = new Sector(3, 3, factory.create(EventType.OBSTACLE));
+    sectors[4][1] = new Sector(4, 1, factory.create(EventType.OBSTACLE));
+
+    sectors[2][0] = new Sector(2, 0, factory.create(EventType.TRAP));
+    sectors[3][2] = new Sector(3, 2, factory.create(EventType.GUARD));
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
         if (sectors[x][y] == null) {
-          sectors[x][y] = new Sector(x, y, new RandomOrNothingEvent());
+          sectors[x][y] = new Sector(x, y, factory.create(EventType.RANDOM_OR_NOTHING));
         }
       }
     }

@@ -27,12 +27,14 @@ public class Game {
       ui.printInterface();
       if (player.isDead()) {
         gameOver = true;
-        System.out.println("You lost,\ngame over!");
+        ui.showMessage("You lost,\ngame over!");
       } else if (player.isFoundTreasure() && player.getCurrentSector() == island.getStartSector()) {
         gameOver = true;
-        System.out.println("==============================");
-        System.out.println("Congratulations!\nYou won!");
-        System.out.println("==============================");
+        ui.showMessage("""
+            ==============================
+            Congratulations!
+            You won!
+            ==============================""");
       }
 
 
