@@ -4,5 +4,5 @@ import org.example.game.GameContext;
 
 public interface SectorEvent {
 
-  void execute(GameContext context);
+    void execute(GameContext context);
 }

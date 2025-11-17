@@ -10,14 +10,14 @@ import org.example.world.Island;
 @Setter
 public class GameContext {
 
-  private Player player;
-  private Island island;
-  private Ui ui;
+    private Player player;
+    private Island island;
+    private Ui ui;
 
-  public GameContext(Player player, Island island, Ui ui) {
-    this.player = player;
-    this.island = island;
-    this.ui = ui;
-  }
+    public GameContext(Player player, Island island, Ui ui) {
+        this.player = player;
+        this.island = island;
+        this.ui = ui;
+    }
 
 }

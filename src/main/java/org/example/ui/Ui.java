@@ -5,17 +5,17 @@ import org.example.model.Player;
 
 public interface Ui {
 
-  void showMessage(String message);
+    void showMessage(String message);
 
-  void showPlayerStatus(Player player);
+    void showPlayerStatus(Player player);
 
-  void showBattleStatus(Player player, Creature enemy);
+    void showBattleStatus(Player player, Creature enemy);
 
-  void showMap();
+    void showMap();
 
-  void showActions();
+    void showActions();
 
-  void scanMove();
+    void scanMove();
 
-  String getInput();
+    String getInput();
 }

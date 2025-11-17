@@ -6,5 +6,5 @@ import org.example.ui.Ui;
 
 public interface BattleStrategy {
 
-  void execute(Player player, Creature enemy, Ui ui);
+    void execute(Player player, Creature enemy, Ui ui);
 }

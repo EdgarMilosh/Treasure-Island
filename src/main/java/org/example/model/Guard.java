@@ -7,8 +7,8 @@ import lombok.Setter;
 @Setter
 public class Guard extends Creature {
 
-  public Guard(String name, int maxHealth, int attackPower) {
-    super(name, maxHealth, attackPower);
-  }
+    public Guard(String name, int maxHealth, int attackPower) {
+        super(name, maxHealth, attackPower);
+    }
 
 }

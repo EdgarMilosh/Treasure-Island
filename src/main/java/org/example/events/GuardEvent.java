@@ -14,57 +14,57 @@ import org.example.ui.Ui;
 
 public class GuardEvent implements SectorEvent {
 
-  private final EnemyFactory enemyFactory = new BasicEnemyFactory();
+    private final EnemyFactory enemyFactory = new BasicEnemyFactory();
 
-  @Override
-  public void execute(GameContext context) {
-    Player player = context.getPlayer();
-    Ui ui = context.getUi();
-    Guard guard = enemyFactory.createGuard();
+    @Override
+    public void execute(GameContext context) {
+        Player player = context.getPlayer();
+        Ui ui = context.getUi();
+        Guard guard = enemyFactory.createGuard();
 
-    ui.showMessage("======================================");
-    ui.showMessage(guard.getName() + " blocks your path!");
+        ui.showMessage("======================================");
+        ui.showMessage(guard.getName() + " blocks your path!");
 
-    startBattle(player, guard, ui);
-  }
+        startBattle(player, guard, ui);
+    }
 
-  private void startBattle(Player player, Guard guard, Ui ui) {
-    BattleStrategy playerAttack = new PlayerAttackStrategy();
-    BattleStrategy enemyAttack = new EnemyAttackStrategy();
-    RunAwayStrategy runAway = new RunAwayStrategy();
+    private void startBattle(Player player, Guard guard, Ui ui) {
+        BattleStrategy playerAttack = new PlayerAttackStrategy();
+        BattleStrategy enemyAttack = new EnemyAttackStrategy();
+        RunAwayStrategy runAway = new RunAwayStrategy();
 
-    while (!guard.isDead() && !player.isDead()) {
-      ui.showBattleStatus(player, guard);
+        while (!guard.isDead() && !player.isDead()) {
+            ui.showBattleStatus(player, guard);
 
-      ui.showMessage("Choose action (a - attack / r - run): ");
-      String action = ui.getInput().trim().toLowerCase();
+            ui.showMessage("Choose action (a - attack / r - run): ");
+            String action = ui.getInput().trim().toLowerCase();
 
-      switch (action) {
-        case "a", "attack" -> playerAttack.execute(player, guard, ui);
-        case "r", "run" -> {
-          runAway.execute(player, guard, ui);
-          if (runAway.isSuccess()) {
-            return;
-          }
+            switch (action) {
+                case "a", "attack" -> playerAttack.execute(player, guard, ui);
+                case "r", "run" -> {
+                    runAway.execute(player, guard, ui);
+                    if (runAway.isSuccess()) {
+                        return;
+                    }
+                }
+                default -> ui.showMessage("Not a valid action! You skipped your turn");
+            }
+
+            if (!guard.isDead()) {
+                enemyAttack.execute(player, guard, ui);
+            }
         }
-        default -> ui.showMessage("Not a valid action! You skipped your turn");
-      }
 
-      if (!guard.isDead()) {
-        enemyAttack.execute(player, guard, ui);
-      }
+        showBattleOutcome(guard, ui);
     }
 
-    showBattleOutcome(guard, ui);
-  }
-
-  private void showBattleOutcome(Creature enemy, Ui ui) {
-    ui.showMessage("============================");
-    if (enemy.isDead()) {
-      ui.showMessage("You defeated the " + enemy.getName() + "!");
-    } else {
-      ui.showMessage("You have been defeated...");
+    private void showBattleOutcome(Creature enemy, Ui ui) {
+        ui.showMessage("============================");
+        if (enemy.isDead()) {
+            ui.showMessage("You defeated the " + enemy.getName() + "!");
+        } else {
+            ui.showMessage("You have been defeated...");
+        }
+        ui.showMessage("============================");
     }
-    ui.showMessage("============================");
-  }
 }

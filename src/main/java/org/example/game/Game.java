@@ -6,39 +6,39 @@ import org.example.world.Island;
 
 public class Game {
 
-  private final Player player;
-  private final Island island;
-  private final ConsoleUi ui;
+    private final Player player;
+    private final Island island;
+    private final ConsoleUi ui;
 
-  private boolean gameOver;
+    private boolean gameOver;
 
-  public Game() {
-    this.player = new Player();
-    this.island = new Island(player);
-    GameContext gameContext = new GameContext(player, island, null);
-    this.ui = new ConsoleUi(gameContext);
-    gameContext.setUi(ui);
+    public Game() {
+        this.player = new Player();
+        this.island = new Island(player);
+        GameContext gameContext = new GameContext(player, island, null);
+        this.ui = new ConsoleUi(gameContext);
+        gameContext.setUi(ui);
 
-    gameOver = false;
-  }
-
-  public void play() {
-    while (!gameOver) {
-      ui.printInterface();
-      if (player.isDead()) {
-        gameOver = true;
-        ui.showMessage("You lost,\ngame over!");
-      } else if (player.isFoundTreasure() && player.getCurrentSector() == island.getStartSector()) {
-        gameOver = true;
-        ui.showMessage("""
-            ==============================
-            Congratulations!
-            You won!
-            ==============================""");
-      }
-
-
+        gameOver = false;
     }
-  }
+
+    public void play() {
+        while (!gameOver) {
+            ui.printInterface();
+            if (player.isDead()) {
+                gameOver = true;
+                ui.showMessage("You lost,\ngame over!");
+            } else if (player.isFoundTreasure() && player.getCurrentSector() == island.getStartSector()) {
+                gameOver = true;
+                ui.showMessage("""
+                        ==============================
+                        Congratulations!
+                        You won!
+                        ==============================""");
+            }
+
+
+        }
+    }
 
 }

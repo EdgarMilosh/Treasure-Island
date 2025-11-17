@@ -4,5 +4,5 @@ import org.example.model.Guard;
 
 public interface EnemyFactory {
 
-  Guard createGuard();
+    Guard createGuard();
 }
